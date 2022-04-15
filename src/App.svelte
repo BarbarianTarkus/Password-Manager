@@ -1,6 +1,9 @@
 <!-- https://eugenkiss.github.io/7guis/tasks#crud -->
 
 <script>
+    import MoviesList from './components/MoviesList.svelte'
+
+
 	let people = [
 		{ first: 'Hans', last: 'Emil' },
 		{ first: 'Max', last: 'Mustermann' },
@@ -49,7 +52,9 @@
 		last = person ? person.last : '';
 	}
 </script>
-
+<main>
+    <PostList />
+</main>
 <input placeholder="filter prefix" bind:value={prefix}>
 
 <select bind:value={i} size={5}>
