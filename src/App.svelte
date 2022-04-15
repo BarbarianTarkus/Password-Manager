@@ -17,7 +17,7 @@
             console.error(error)
         }
     })
-
+    
     let prefix = '';
     let nom = ''
     let data = ''
@@ -25,13 +25,13 @@
     
     $: filteredMovies = prefix
         ? movies.filter( movies=> {
-            const nom = `${movies.nom}`;
+            const nom = `${movies.nom}, ${movies.data}`
             return nom.toLowerCase().startsWith(prefix.toLowerCase())
         })
-        : movies;
-
+        : movies
+    
     $: selected = filteredMovies[i];
-     
+    
     $: reset_inputs(selected);
     
     function create() {
@@ -39,6 +39,7 @@
         i = movies.length - 1;
         nom = data = '';
     }
+
     function remove() {
         // Remove selected person from the source array (people), not the filtered array
         const index = movies.indexOf(selected);
@@ -47,17 +48,19 @@
         nom = data = '';
         i = Math.min(i, filteredMovies.length - 2);
     }
+
     function update() {
         selected.nom = nom;
         selected.data = data;
         movies = movies;
     }
+    
     function reset_inputs(movies) {
         nom = movies ? movies.nom : '';
         data = movies ? movies.data : '';
     }
-</script>
 
+</script>
 
 <input placeholder="filter prefix" bind:value={prefix}>
 
@@ -72,14 +75,11 @@
 <label><input bind:value={nom} placeholder="nom"></label>
 <label><input bind:value={data} placeholder="data"></label>
 
-
 <div class='buttons'>
     <button on:click={create} disabled="{!nom || !data}">create</button>
     <button on:click={update} disabled="{!nom || !data || !selected}">update</button>
     <button on:click={remove} disabled="{!selected}">delete</button>
 </div>
-
-
 
 <style>
     * {
