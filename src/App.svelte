@@ -1,95 +1,104 @@
 <!-- https://eugenkiss.github.io/7guis/tasks#crud -->
 
 <script>
-    import MoviesList from './components/MoviesList.svelte'
+    import { onMount } from 'svelte'
+    import axios from 'axios'
+    
+    const endpoint = 'http://localhost:3000/movies'
 
+    let movies = []
 
-	let people = [
-		{ first: 'Hans', last: 'Emil' },
-		{ first: 'Max', last: 'Mustermann' },
-		{ first: 'Roman', last: 'Tisch' }
-	];
+    onMount(async() => {
+        try{
+            const response = await axios.get(endpoint)
+            movies = await response.data
+            console.log(movies)
+        } catch (error){
+            console.error(error)
+        }
+    })
 
-	let prefix = '';
-	let first = '';
-	let last = '';
-	let i = 0;
+    let prefix = '';
+    let nom = ''
+    let data = ''
+    let i = 0
+    
+    $: filteredMovies = prefix
+        ? movies.filter( movies=> {
+            const nom = `${movies.nom}`;
+            return nom.toLowerCase().startsWith(prefix.toLowerCase())
+        })
+        : movies;
 
-	$: filteredPeople = prefix
-		? people.filter(person => {
-			const name = `${person.last}, ${person.first}`;
-			return name.toLowerCase().startsWith(prefix.toLowerCase());
-		})
-		: people;
+    $: selected = filteredMovies[i];
+     
+    $: reset_inputs(selected);
+    
+    function create() {
+        movies = movies.concat({ nom, data });
+        i = movies.length - 1;
+        nom = data = '';
+    }
+    function remove() {
+        // Remove selected person from the source array (people), not the filtered array
+        const index = movies.indexOf(selected);
+        movies = [...movies.slice(0, index), ...movies.slice(index + 1)];
 
-	$: selected = filteredPeople[i];
-
-	$: reset_inputs(selected);
-
-	function create() {
-		people = people.concat({ first, last });
-		i = people.length - 1;
-		first = last = '';
-	}
-
-	function update() {
-		selected.first = first;
-		selected.last = last;
-		people = people;
-	}
-
-	function remove() {
-		// Remove selected person from the source array (people), not the filtered array
-		const index = people.indexOf(selected);
-		people = [...people.slice(0, index), ...people.slice(index + 1)];
-
-		first = last = '';
-		i = Math.min(i, filteredPeople.length - 2);
-	}
-
-	function reset_inputs(person) {
-		first = person ? person.first : '';
-		last = person ? person.last : '';
-	}
+        nom = data = '';
+        i = Math.min(i, filteredMovies.length - 2);
+    }
+    function update() {
+        selected.nom = nom;
+        selected.data = data;
+        movies = movies;
+    }
+    function reset_inputs(movies) {
+        nom = movies ? movies.nom : '';
+        data = movies ? movies.data : '';
+    }
 </script>
-<main>
-    <PostList />
-</main>
+
+
 <input placeholder="filter prefix" bind:value={prefix}>
 
 <select bind:value={i} size={5}>
-	{#each filteredPeople as person, i}
-		<option value={i}>{person.last}, {person.first}</option>
-	{/each}
+    {#each movies as movie, i}
+        <option value={i}>{movie.nom}, {movie.data}</option>
+    {:else}
+        <p>loading...</p>
+    {/each}
 </select>
 
-<label><input bind:value={first} placeholder="first"></label>
-<label><input bind:value={last} placeholder="last"></label>
+<label><input bind:value={nom} placeholder="nom"></label>
+<label><input bind:value={data} placeholder="data"></label>
+
 
 <div class='buttons'>
-	<button on:click={create} disabled="{!first || !last}">create</button>
-	<button on:click={update} disabled="{!first || !last || !selected}">update</button>
-	<button on:click={remove} disabled="{!selected}">delete</button>
+    <button on:click={create} disabled="{!nom || !data}">create</button>
+    <button on:click={update} disabled="{!nom || !data || !selected}">update</button>
+    <button on:click={remove} disabled="{!selected}">delete</button>
 </div>
 
+
+
 <style>
-	* {
-		font-family: inherit;
-		font-size: inherit;
-	}
+    * {
+        font-family: inherit;
+        font-size: inherit;
+    }
 
-	input {
-		display: block;
-		margin: 0 0 0.5em 0;
-	}
+    input {
+        display: block;
+        margin: 0 0 0.5em 0;
+    }
 
-	select {
-		float: left;
-		margin: 0 1em 1em 0;
-		width: 14em;
-	}
+    select {
+        float: left;
+        margin: 0 1em 1em 0;
+        width: 14em;
+    }
 
-	.buttons {
-		clear: both;
-	}
+    .buttons {
+        clear: both;
+    }
 </style>
