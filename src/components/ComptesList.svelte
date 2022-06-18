@@ -42,20 +42,20 @@
     }
 
     async function remove() {
-        // Remove selected person from the source array (people), not the filtered array
+        // Remove selected person from the source array (people), not the filtered array 
         const index = comptes.indexOf(selected);
         try {
-            const response= await axios.delete(`http://localhost:3000/comptes/${index}`);
+            const response= await axios.delete(`http://localhost:3000/comptes?usuari_compte=eq.${selected.usuari_compte}`);
             console.log(response);
         } catch (error) {
-            console.error(error);
+            if (error != "TypeError: selected is undefined") {
+                console.error(error);
+            }
         }
-        
-        /*
         comptes = [...comptes.slice(0, index), ...comptes.slice(index + 1)];
         usuari_compte = nom_compte = "";
         i = Math.min(i, filteredComptes.length - 2);
-        */
+        
     }
 
     function update() {
@@ -121,53 +121,3 @@
     <button on:click={remove} disabled={!selected}>delete</button>
 </div>
 
-
-<style>
-
-    input {
-		display: block;
-		margin:  1em 1em;
-	}
-
-    label {
-
-        color: back;
-        background: rgba(231, 231, 231, 0.994);
-        padding: 0rem 0rem;
-        border-radius: 10px;
-        width: 20em;
-        margin: 0 1em;
-    }
-
-    select {
-        float: left;
-        margin: 0 1em 1em 0;
-        width: 20em;
-
-    }
-    table {
-        background: rgba(118, 116, 130, 0.994);
-        color: rgb(255, 255, 255);
-        border-radius: 0 1em 1em 0;
-        margin: 0em 1em;
-    }    
-    tr {
-        border-color: lighten(#ffffff, 10%);
-        text-align: left;
-    }
-    th,
-    td {
-        padding: 0.5em 0.5em;
-    }
-
-
-    table th {
-        color: rgb(255, 255, 255);
-    }
-
-
-    .buttons {
-        clear: both;
-        margin: 1em 1em;
-    }
-</style>
