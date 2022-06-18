@@ -44,16 +44,16 @@
         try {
             const response = await axios.post(endpoint, carpeta);
             console.log(response);
+            carpetes = carpetes.concat({ nom_carpeta, pare });
+            i = carpetes.length - 1;
+            nom_carpeta = pare = "";
         } catch (error) {
             console.error(error);
             
         }
 
-        if(nom_carpeta != carpeta.nom_carpeta){
-            carpetes = carpetes.concat({ nom_carpeta, pare, clau_mestra,cognoms });
-            i = carpetes.length - 1;
-            nom_carpeta = pare = clau_mestra = cognoms = "";
-        }
+            
+
     }
 
     async function remove() {
@@ -116,7 +116,7 @@
     {/each}
 </select>
 <label>
-    <button class="reset" on:click={reset_inputs} disabled={!selected}>reset</button>
+    <button class="reset" on:click={reset_inputs} disabled={!nom_carpeta || !selected}>reset</button>
 </label>
 <table>
     <tr>
@@ -138,5 +138,5 @@
     <button
         on:click={update}
         disabled={!nom_carpeta || !selected}>Actualitza</button>
-    <button on:click={remove} disabled={!selected}>Esborra</button>
+    <button on:click={remove} disabled={!nom_carpeta ||!selected}>Esborra</button>
 </div>

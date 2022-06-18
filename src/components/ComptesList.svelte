@@ -45,15 +45,15 @@
         try {
             const response = await axios.post(endpoint, compte);
             console.log(response);
+            comptes = comptes.concat({ usuari_compte, nom_compte, clau_mestra,cognoms });
+            i = comptes.length - 1;
+            usuari_compte = nom_compte = clau_mestra = cognoms = "";
         } catch (error) {
             console.error(error);
             
         }
-        if(usuari_compte != compte.usuari_compte){
-            comptes = comptes.concat({ usuari_compte, nom_compte, clau_mestra,cognoms });
-            i = comptes.length - 1;
-            usuari_compte = nom_compte = clau_mestra = cognoms = "";
-        }
+
+            
     }
     async function remove() {
         const index = comptes.indexOf(selected);
