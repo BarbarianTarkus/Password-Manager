@@ -7,21 +7,22 @@
 
     let carpetes = [];
 
-    onMount(async () => {
+    async function getAllElements() {
         try {
             const response = await axios.get(endpoint);
             carpetes = await response.data;
-            //console.log(carpetes);
         } catch (error) {
-            //console.error(error);
+            console.error(error);
         }
-    });
+    }
+
+    onMount(getAllElements);
 
     let prefix = "";
 
     let nom_carpeta = "";
     let pare = "";
-    let i = 0;
+    let i = null;
 
     $: filteredcarpetes = prefix
         ? carpetes.filter((carpetes) => {
@@ -34,18 +35,39 @@
 
     $: reset_inputs(selected);
 
-    function create() {
-        carpetes = carpetes.concat({ nom, data });
-        i = carpetes.length - 1;
-        usuari_carpeta = nom_carpeta = "";
+    async function create() {
+        const carpeta = {
+            nom_carpeta: nom_carpeta,
+            pare: pare
+        };
+
+        try {
+            const response = await axios.post(endpoint, carpeta);
+            console.log(response);
+        } catch (error) {
+            console.error(error);
+            
+        }
+
+        if(usuari_compte != carpeta.nom_carpeta){
+            carpetes = carpetes.concat({ usuari_compte, nom_compte, clau_mestra,cognoms });
+            i = carpetes.length - 1;
+            usuari_compte = nom_compte = clau_mestra = cognoms = "";
+        }
     }
 
-    function remove() {
-        // Remove selected person from the source array (people), not the filtered array
+    async function remove() {
         const index = carpetes.indexOf(selected);
- 
+        try {
+            const response = await axios.delete(`http://localhost:3000/carpetes?nom_carpeta=eq.${selected.nom_carpeta}`);
+            console.log(response);
+        } catch (error) {
+            if (error != "TypeError: selected is undefined") {
+                console.error(error);
+            }
+        }
         carpetes = [...carpetes.slice(0, index), ...carpetes.slice(index + 1)];
-        nom_carpeta = pare = "";
+        nom_carpeta = pare = '';
         i = Math.min(i, filteredcarpetes.length - 2);
     }
 
@@ -67,27 +89,27 @@
 
 
 
-<input placeholder="filter prefix" bind:value={prefix} />
-<label>
-    <select bind:value={i} size={5}>
-        {#each filteredcarpetes as carpeta, i}
-            <option value={i}
-                >{carpeta.nom_carpeta} [{carpeta.pare}]</option
-            >
-        {:else}
-            <p>loading...</p>
-        {/each}
-    </select>
-</label>
+<input placeholder="Cerca..." bind:value={prefix} />
 
+
+<select bind:value={i} size={5}>
+    {#each filteredcarpetes as carpeta, i}
+        <option value={i}>{carpeta.nom_carpeta} [{carpeta.pare}] </option>
+    {:else}
+        <p>loading...</p>
+    {/each}
+</select>
+<label>
+    <button class="reset" on:click={reset_inputs} disabled={!selected}>reset</button>
+</label>
 <table>
     <tr>
-        <th>nom_carpeta</th>
-        <th>pare</th>
+        <th>Nom</th>
+        <th>Pare</th>
     </tr>
     <tr>
         <td data-th="nom_carpeta">
-            {nom_carpeta}
+            <input type="text" bind:value={nom_carpeta} placeholder=nom>
         </td>
         <td data-th="pare">
             <input bind:value={pare} placeholder="pare" />
@@ -96,60 +118,9 @@
 </table>
 
 <div class="buttons">
-    <button on:click={create} disabled={!nom_carpeta || !nom_carpeta}>create</button>
+    <button on:click={create} disabled={!nom_carpeta}>Crea</button>
     <button
         on:click={update}
-        disabled={!nom_carpeta || !pare || !selected}>update</button>
-    <button on:click={remove} disabled={!selected}>delete</button>
+        disabled={!nom_carpeta || !selected}>Actualitza</button>
+    <button on:click={remove} disabled={!selected}>Esborra</button>
 </div>
-
-
-<style>
-
-    input {
-		display: block;
-		margin: 0 0 0.5em 0;
-	}
-    select {
-        float: left;
-        margin: 0 1em 1em 0;
-        width: 20em;
-    }
-
-    label {
-        position: relative;
-        display: flex;
-        flex-wrap: wrap;
-
-        color: hsl(240, 25%, 20%);
-        background: hsla(240, 25%, 95%, 1);
-        padding: 0.75rem 1rem;
-        border-radius: 10px;
-        width: 20em;
-        margin: 1em 0em;
-    }
-
-    table {
-        background: #34495e;
-        color: #fff;
-        border-radius: 0.4em;
-        overflow: hidden;
-    }
-    table th {
-        color: #dd5;
-    }
-
-    tr {
-        border-color: lighten(#34495e, 10%);
-        text-align: left;
-    }
-    th,
-    td {
-        margin: 0.5em 1em;
-        padding: 0.5em 2em;
-    }
-
-    .buttons {
-        clear: both;
-    }
-</style>
