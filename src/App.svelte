@@ -2,6 +2,7 @@
 <script>
 import ComptesList from "./components/ComptesList.svelte";
 import CarpetesList from "./components/CarpetesList.svelte";
+import TableStyles from "./components/TableStyles.svelte";
 export let menu = 1;
 </script>
 
@@ -11,8 +12,6 @@ export let menu = 1;
 
 
 <style>
-
-
     :global(*) {
             box-sizing: border-box;
             padding: 0;
@@ -26,10 +25,8 @@ export let menu = 1;
 		display : inline;
         margin : 0 1em;
 	}
-
-
-
 </style>
+
 
 
 <ul id="menu">
@@ -38,6 +35,7 @@ export let menu = 1;
 </ul>
 
 
+<TableStyles />
 
 {#if menu === 1}
 <ComptesList />
