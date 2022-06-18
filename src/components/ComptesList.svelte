@@ -1,28 +1,28 @@
 <script>
     import { onMount } from "svelte";
     import axios from "axios";
-    import AutoComplete from "simple-svelte-autocomplete";
 
     const endpoint = "http://localhost:3000/comptes";
 
     let comptes = [];
 
-    onMount(async () => {
+    async function getAllElements() {
         try {
             const response = await axios.get(endpoint);
             comptes = await response.data;
-            //console.log(comptes);
         } catch (error) {
-            //console.error(error);
+            console.error(error);
         }
-    });
+    }
+
+    onMount(getAllElements);
 
     let prefix = "";
     let usuari_compte = "";
     let clau_mestra = "";
     let nom_compte = "";
     let cognoms = "";
-    let i = 0;
+    let i = null;
 
     $: filteredComptes = prefix
         ? comptes.filter((comptes) => {
@@ -35,17 +35,30 @@
 
     $: reset_inputs(selected);
 
-    function create() {
-        comptes = comptes.concat({ nom, data });
-        i = comptes.length - 1;
-        usuari_compte = nom_compte = "";
+    async function create() {
+        const compte = {
+            usuari_compte: usuari_compte,
+            nom_compte: nom_compte,
+            clau_mestra: clau_mestra,
+            cognoms: cognoms,
+        };
+        try {
+            const response = await axios.post(endpoint, compte);
+            console.log(response);
+        } catch (error) {
+            console.error(error);
+            
+        }
+        if(usuari_compte != compte.usuari_compte){
+            comptes = comptes.concat({ usuari_compte, nom_compte, clau_mestra,cognoms });
+            i = comptes.length - 1;
+            usuari_compte = nom_compte = clau_mestra = cognoms = "";
+        }
     }
-
     async function remove() {
-        // Remove selected person from the source array (people), not the filtered array 
         const index = comptes.indexOf(selected);
         try {
-            const response= await axios.delete(`http://localhost:3000/comptes?usuari_compte=eq.${selected.usuari_compte}`);
+            const response = await axios.delete(`http://localhost:3000/comptes?usuari_compte=eq.${selected.usuari_compte}`);
             console.log(response);
         } catch (error) {
             if (error != "TypeError: selected is undefined") {
@@ -53,12 +66,28 @@
             }
         }
         comptes = [...comptes.slice(0, index), ...comptes.slice(index + 1)];
-        usuari_compte = nom_compte = "";
+        usuari_compte = nom_compte = '';
         i = Math.min(i, filteredComptes.length - 2);
-        
     }
+    async function update() {
+        const compte = {
+            usuari_compte: usuari_compte,
+            nom_compte: nom_compte,
+            clau_mestra: clau_mestra,
+            cognoms: cognoms,
+        };
 
-    function update() {
+        try {
+            const response = await axios.patch(
+                `http://localhost:3000/comptes?usuari_compte=eq.${selected.usuari_compte}`,
+                compte
+            );
+            console.log(response);
+        } catch (error) {
+            if (error != "TypeError: selected is undefined") {
+                console.error(error);
+            }
+        }
         selected.usuari_compte = usuari_compte;
         selected.nom_compte = nom_compte;
         comptes = comptes;
@@ -75,49 +104,70 @@
     let selectedCompteValue = "";
     let highlightedCompteObject = "";
 
-    onMount(remove);
 
+
+    function revealPassword(){
+        var x = document.getElementById("reveal");
+        var y = document.getElementById("buttonReveal");
+        if (x.type === "password") {
+            x.type = "text";
+            y.style = "background-color: rgb(0, 0, 0);";
+        } else {
+            x.type = "password";
+            y.style = "background-color: rgb(255, 255, 255);";
+        }
+
+    }
 </script>
 
 
 
-<input placeholder="filter prefix" bind:value={prefix} />
+<input class="filter" placeholder="Cerca..." bind:value={prefix} />
+
+
+
+<select bind:value={i} size={5}>
+    {#each filteredComptes as compte, i}
+        <option value={i}>{compte.usuari_compte} [{compte.nom_compte}]</option>
+    {:else}
+        <p>loading...</p>
+    {/each}
+</select>
+
 <label>
-    <select bind:value={i} size={5}>
-        {#each filteredComptes as compte, i}
-            <option value={i}
-                >{compte.usuari_compte} [{compte.nom_compte}]</option
-            >
-        {:else}
-            <p>loading...</p>
-        {/each}
-    </select>
+    <button class="reset" on:click={reset_inputs} disabled={!selected}>Neteja</button>
+    <table>
+        <tr>
+            <th>Usuari</th>
+            <th>Clau Mestra</th>
+            <th>Nom</th>
+            <th>Cognoms</th>
+        </tr>
+        <tr>
+            <td data-th="Usuari">
+                <input for="usuari-compte" type="text" bind:value={usuari_compte} placeholder="*Usuari" required/>
+            </td>
+            <td data-th="Clau Mestra">
+                <input for="clau-mestra" type="password" bind:value={clau_mestra} placeholder="*Clau Mestra" id="reveal"/>            
+                <button style="display:inline" on:click={revealPassword} id="buttonReveal" required/> 
+            </td>
+            <td for="nom_compte" type="text" data-th="Nom">
+                <input bind:value={nom_compte} placeholder="Nom"/>
+            </td>
+            <td for="cognoms" type="text" ata-th="Cognoms">
+                <input bind:value={cognoms} placeholder="Cognoms" />
+            </td>
+        </tr>
+    </table>
 </label>
 
-<table>
-    <tr>
-        <th>usuari_compte</th>
-        <th>clau_mestra</th>
-        <th>nom_compte</th>
-        <th>cognoms</th>
-    </tr>
-    <tr>
-        <td data-th="usuari_compte">
-            {usuari_compte}
-        </td>
-        <td data-th="clau_mestra">
-            <input bind:value={clau_mestra} placeholder="clau_mestra" />
-        </td>
-        <td data-th="nom_compte">{nom_compte}</td>
-        <td data-th="cognoms">{cognoms}</td>
-    </tr>
-</table>
 
 <div class="buttons">
-    <button on:click={create} disabled={!usuari_compte || !nom_compte}>create</button>
+    <button on:click={create} disabled={!usuari_compte || !clau_mestra}>Crea</button>
     <button
         on:click={update}
-        disabled={!usuari_compte || !nom_compte || !selected}>update</button>
-    <button on:click={remove} disabled={!selected}>delete</button>
+        disabled={!usuari_compte || !clau_mestra || !selected}>Actualitza</button>
+    <button on:click={remove} disabled={!selected}>Esborra</button>
+    
 </div>
 
