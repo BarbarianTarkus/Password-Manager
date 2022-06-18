@@ -49,10 +49,10 @@
             
         }
 
-        if(usuari_compte != carpeta.nom_carpeta){
-            carpetes = carpetes.concat({ usuari_compte, nom_compte, clau_mestra,cognoms });
+        if(nom_carpeta != carpeta.nom_carpeta){
+            carpetes = carpetes.concat({ nom_carpeta, pare, clau_mestra,cognoms });
             i = carpetes.length - 1;
-            usuari_compte = nom_compte = clau_mestra = cognoms = "";
+            nom_carpeta = pare = clau_mestra = cognoms = "";
         }
     }
 
@@ -71,9 +71,25 @@
         i = Math.min(i, filteredcarpetes.length - 2);
     }
 
-    function update() {
-        selected.usuari_carpeta = usuari_carpeta;
+    async function update() {
+        const carpeta = {
+            nom_carpeta: nom_carpeta,
+            pare: pare,
+        };
+
+        try {
+            const response = await axios.patch(
+                `http://localhost:3000/carpetes?nom_carpeta=eq.${selected.nom_carpeta}`,
+                carpeta
+            );
+            console.log(response);
+        } catch (error) {
+            if (error != "TypeError: selected is undefined") {
+                console.error(error);
+            }
+        }
         selected.nom_carpeta = nom_carpeta;
+        selected.pare = pare;
         carpetes = carpetes;
     }
 
