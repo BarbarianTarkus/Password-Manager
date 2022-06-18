@@ -58,7 +58,7 @@
     async function remove() {
         const index = comptes.indexOf(selected);
         try {
-            const response = await axios.delete(`http://localhost:3000/comptes?usuari_compte=eq.${selected.usuari_compte}`);
+            const response = await axios.delete(endpoint + `?usuari_compte=eq.${selected.usuari_compte}`);
             console.log(response);
         } catch (error) {
             if (error != "TypeError: selected is undefined") {
@@ -78,8 +78,8 @@
         };
 
         try {
-            const response = await axios.patch(
-                `http://localhost:3000/comptes?usuari_compte=eq.${selected.usuari_compte}`,
+            const response = await axios.patch(endpoint +
+                `?usuari_compte=eq.${selected.usuari_compte}`,
                 compte
             );
             console.log(response);

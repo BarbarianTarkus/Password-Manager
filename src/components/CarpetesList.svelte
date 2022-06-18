@@ -1,7 +1,6 @@
 <script>
     import { onMount } from "svelte";
     import axios from "axios";
-    import AutoComplete from "simple-svelte-autocomplete";
 
     const endpoint = "http://localhost:3000/carpetes";
 
@@ -59,7 +58,7 @@
     async function remove() {
         const index = carpetes.indexOf(selected);
         try {
-            const response = await axios.delete(`http://localhost:3000/carpetes?nom_carpeta=eq.${selected.nom_carpeta}`);
+            const response = await axios.delete(endpoint +`?nom_carpeta=eq.${selected.nom_carpeta}`);
             console.log(response);
         } catch (error) {
             if (error != "TypeError: selected is undefined") {
@@ -79,7 +78,7 @@
 
         try {
             const response = await axios.patch(
-                `http://localhost:3000/carpetes?nom_carpeta=eq.${selected.nom_carpeta}`,
+                endpoint + `?nom_carpeta=eq.${selected.nom_carpeta}`,
                 carpeta
             );
             console.log(response);
