@@ -3,7 +3,14 @@
 import {Router, Route, Link} from "svelte-routing";
 import ComptesList from "./components/ComptesList.svelte";
 import CarpetesList from "./components/CarpetesList.svelte";
+import CercasList from "./components/CercasList.svelte";
+import CredencialsList from "./components/CredencialsList.svelte";
+import DireccionsList from "./components/DireccionsList.svelte";
+import RolsList from "./components/RolsList.svelte";
+import EnrolamentsList from "./components/EnrolamentsList.svelte";
 import TableStyles from "./components/TableStyles.svelte";
+import TagsList from "./components/TagsList.svelte";
+
 </script>
 
 <style>
@@ -32,7 +39,13 @@ import TableStyles from "./components/TableStyles.svelte";
         <nav>
             <Link to="/">Home</Link>
             <Link to="comptes">Comptes</Link>
+            <Link to="credencials">Credencials</Link>
             <Link to="carpetes">Carpetes</Link>
+            <Link to="direccions">Direccions</Link>
+            <Link to="cercas">Cercas</Link>
+            <Link to="tags">Tags</Link>   
+            <Link to="rols">Rols</Link>
+            <Link to="enrolaments">Enrolaments</Link>   
         </nav>
     </header>
     
@@ -45,9 +58,30 @@ import TableStyles from "./components/TableStyles.svelte";
         <Route path="comptes">
             <ComptesList />
         </Route>
-    
+        <Route path="credencials">
+            <CredencialsList />
+        </Route>
         <Route path="carpetes">
             <CarpetesList />
+        </Route>
+        
+        <Route path="direccions">
+            <DireccionsList />
+        </Route>
+        <Route path="tags">
+            <TagsList />
+        </Route>
+        <Route path="direccions">
+            <DireccionsList />
+        </Route>
+        <Route path="cercas">
+            <CercasList />
+        </Route>
+        <Route path="rols">
+            <RolsList />
+        </Route>
+        <Route path="enrolaments">
+            <EnrolamentsList />
         </Route>
     </main>
 </Router>
