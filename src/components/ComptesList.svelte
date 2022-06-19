@@ -22,6 +22,7 @@
     let clau_mestra = "";
     let nom_compte = "";
     let cognoms = "";
+    let nom_carpeta = "";
     let i = null;
 
     $: filteredComptes = prefix
@@ -98,6 +99,7 @@
         clau_mestra = comptes ? comptes.clau_mestra : "";
         nom_compte = comptes ? comptes.nom_compte : "";
         cognoms = comptes ? comptes.cognoms : "";
+        nom_carpeta = comptes ? comptes.nom_carpeta : "";
     }
     //console.log(usuari_compte);
     let selectedCompteObject = comptes[0];
@@ -142,6 +144,7 @@
             <th>Clau Mestra</th>
             <th>Nom</th>
             <th>Cognoms</th>
+            <th>Accés a carpetes</th>
         </tr>
         <tr>
             <td data-th="Usuari">
@@ -156,6 +159,9 @@
             </td>
             <td for="cognoms" type="text" ata-th="Cognoms">
                 <input bind:value={cognoms} placeholder="Cognoms" />
+            </td>
+            <td data-th="Accés a carpetes"> 
+                {nom_carpeta}
             </td>
         </tr>
     </table>
