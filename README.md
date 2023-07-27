@@ -19,7 +19,7 @@
 ## PostgreSQL
 
 postgresql.conf
-```shell
+```bash
 # DB Version: 14
 # OS Type: linux
 # DB Type: web
@@ -54,7 +54,7 @@ All Backend is built with Docker.
 
 <center>dockercompose.yml</center>
 
-```docker
+```yml
 version: '3.1'
 
 services:
