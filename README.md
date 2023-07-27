@@ -50,7 +50,7 @@ max_parallel_maintenance_workers = 3
 [PostgREST Docker Compose](https://postgrest.org/en/stable/install.html#docker)
 
 ## Docker
-All Backend is built with Docker.
+All Backend is deployed with Docker.
 
 <center>dockercompose.yml</center>
 
